@@ -9,133 +9,116 @@ list($_b, $_g, $_l) = $template->initialize('9adca0ca0c', 'html')
 ;
 // prolog Latte\Macros\BlockMacros
 //
-// block field
+// block content
 //
-if (!function_exists($_b->blocks['field'][] = '_lbbf5a345b76_field')) { function _lbbf5a345b76_field($_b, $_args) { foreach ($_args as $__k => $__v) $$__k = $__v
-?><div id="layout_body2">
-    <div id="navigation2">
-        <div id="nav4">
-            <a href="<?php echo Latte\Runtime\Filters::escapeHtml($_control->link("Sign:out"), ENT_COMPAT) ?>
-">Logout</a>
-            <div class="clearer">&nbsp;</div>
-        </div>  
-        <div class="clearer">&nbsp;</div>
-    </div>
-</div>
-
-<div id="layout_body2">
-    <div id="navigation2">
-        <div id="nav3">
-            <a href="<?php echo Latte\Runtime\Filters::escapeHtml($_control->link("Homepage:profile", array($thisUserID)), ENT_COMPAT) ?>
-">Profile</a>
-            <div class="clearer">&nbsp;</div>
-        </div>  
-        <div class="clearer">&nbsp;</div>
-    </div>
-</div>
+if (!function_exists($_b->blocks['content'][] = '_lb56629dd985_content')) { function _lb56629dd985_content($_b, $_args) { foreach ($_args as $__k => $__v) $$__k = $__v
+ ?>
+<div id="<?php echo $_control->getSnippetId('roomSnip') ?>"><?php call_user_func(reset($_b->blocks['_roomSnip']), $_b, $template->getParameters()) ?>
+</div><script>
+    $(".post_messages").scrollTop($(".post_messages")[0].scrollHeight);
+    $(document).ready(function() {   
+        $('#information').click(function() {
+                if(document.getElementById('showInfo').style.display === "none"){
+                  document.getElementById('showMessages').style.display= "none";
+                  document.getElementById('showInfo').style.display = "block";
+                }else{
+                  document.getElementById('showInfo').style.display = "none";
+                  document.getElementById('showMessages').style.display= "block";
+                }
+                return false;
+        });
+    });
+</script> 
 <?php
 }}
 
 //
-// block content
+// block _roomSnip
 //
-if (!function_exists($_b->blocks['content'][] = '_lb56629dd985_content')) { function _lb56629dd985_content($_b, $_args) { foreach ($_args as $__k => $__v) $$__k = $__v
+if (!function_exists($_b->blocks['_roomSnip'][] = '_lbf3ed938284__roomSnip')) { function _lbf3ed938284__roomSnip($_b, $_args) { foreach ($_args as $__k => $__v) $$__k = $__v; $_control->redrawControl('roomSnip', FALSE)
 ?><div id="navigation">
     <div id="nav1">
         <ul>
-<?php $iterations = 0; foreach ($rooms as $room) { ?>            <div class="post">                
-            <li <?php if ($room->id_rooms == $thisRoomID) { ?> class="current_room" <?php } ?>>
-                <a href="<?php echo Latte\Runtime\Filters::escapeHtml($_control->link("Debate:room", array($room->id_rooms)), ENT_COMPAT) ?>
-"><?php echo Latte\Runtime\Filters::escapeHtml($room->title, ENT_NOQUOTES) ?></a>   
-            </li>
-            </div>
-<?php $iterations++; } ?>
-            <div class="post"><li><a href="<?php echo Latte\Runtime\Filters::escapeHtml($_control->link("Homepage:create"), ENT_COMPAT) ?>
-">►</a></li></div>
+<?php $_b->templates['9adca0ca0c']->renderChildTemplate("../components/room/printRooms.latte", $template->getParameters()) ?>
         </ul>
         <div class="clearer">&nbsp;</div>
     </div>
     
     <div id="nav2">
-        <ul>
-            <li><a href="<?php echo Latte\Runtime\Filters::escapeHtml($_control->link("Debate:info", array($thisRoomID)), ENT_COMPAT) ?>
-">Information</a></li>
-<?php if (($thisOwner > 0)||($thisUser->role == 'admin')) { if (($thisRoomID != 1)&&($thisRoomID != 2)) { ?>
-            <li><a href="<?php echo Latte\Runtime\Filters::escapeHtml($_control->link("Debate:rename", array($thisRoomID)), ENT_COMPAT) ?>
+        <ul >
+            <li><a href="#" id="information">Information</a></li>
+                
+<?php if (($localUser->id_users == $owner->id_users)||($localUser->role == 'admin')) { ?>
+            
+<?php if (($localRoom->id_rooms != 1)&&($localRoom->id_rooms != 2)) { ?>
+                    <li><a class="ajax" href="<?php echo Latte\Runtime\Filters::escapeHtml($_control->link("rename!", array($localRoom->id_rooms)), ENT_COMPAT) ?>
 ">Rename</a></li>
 <?php } ?>
-            <li><a href="<?php echo Latte\Runtime\Filters::escapeHtml($_control->link("Debate:lock", array($thisRoomID)), ENT_COMPAT) ?>
-"><?php if ($thisRoomLock > 0) { ?>Lock<?php } else { ?>Unlock<?php } ?></a></li>
-<?php if (($thisRoomID != 1)&&($thisRoomID != 2)) { ?>
-            <li><a href="<?php echo Latte\Runtime\Filters::escapeHtml($_control->link("Debate:delete", array($thisRoomID)), ENT_COMPAT) ?>
+                
+                    <li><a class="ajax" href="<?php echo Latte\Runtime\Filters::escapeHtml($_control->link("lock!"), ENT_COMPAT) ?>
+">
+                            <?php if ($localRoom->lock == 'f') { ?>Lock<?php } else { ?>
+Unlock<?php } ?>
+
+                        </a>
+                    </li>
+                    
+<?php if (($localRoom->id_rooms != 1)&&($localRoom->id_rooms != 2)) { ?>
+                    <li><a href="<?php echo Latte\Runtime\Filters::escapeHtml($_control->link("delete!", array($localRoom->id_rooms)), ENT_COMPAT) ?>
 ">Delete</a></li>
-<?php } } ?>
+<?php } ?>
+                
+<?php } ?>
         </ul>
         <div class="clearer">&nbsp;</div>
-    </div>
+    </div>       
 </div>
-<?php if ($thisRoom->lock == 't') { ?>
-    <center>This room is locked</center>
-<?php } elseif ($thisRoom->lock == 'f') { ?>
-<div id="main"<?php echo '"' . Latte\Runtime\Filters::escapeHtml($_POST['roomId']= $thisRoomID, ENT_COMPAT) . '"' ?>>
-    <div class="left" id="content_outer">
-        <div id="content">
-<?php if ($isRename > 0) { ?>
-            <div class="post" >	
+            
+<?php if ($localRoom->lock == 'f') { ?>
+    <div id="main" <?php echo '"' . Latte\Runtime\Filters::escapeHtml($_POST['roomId']= $localRoom->id_rooms, ENT_COMPAT) . '"' ?>>
+        <div class="left" id="content_outer">
+            <div id="content">
+<?php if ($localRoom->rename == 't') { ?>
+                <div class="post" >	
 <?php $_l->tmp = $_control->getComponent("renameForm"); if ($_l->tmp instanceof Nette\Application\UI\IRenderable) $_l->tmp->redrawControl(NULL, FALSE); $_l->tmp->render() ?>
-            </div>
+                </div>
 <?php } else { ?>
-            <div class="post">				
-                <div class="post_messages"> 
-<?php $iterations = 0; foreach ($messages as $message) { if (($message->id_users_from == $message->id_users_to)||($thisUserID == $message->id_users_to)||($thisUserID == $message->id_users_from)) { ?>
-        <div class="date"><?php echo Latte\Runtime\Filters::escapeHtml($template->date($message->time, 'F j, Y'), ENT_NOQUOTES) ?></div>
-        <p><b><a href="<?php echo Latte\Runtime\Filters::escapeHtml(Latte\Runtime\Filters::safeUrl($message->id_messages), ENT_COMPAT) ?>
-" ><?php echo Latte\Runtime\Filters::escapeHtml($message->login, ENT_NOQUOTES) ?></a></b> </p>
-        <div><?php echo Latte\Runtime\Filters::escapeHtml($message->message, ENT_NOQUOTES) ?></div><br>
-<?php } $iterations++; } ?>
-                </div>
-            </div>
-
-            <div class="post">
-                <div class="post_body">
-                    <blockquote>
+                <div id="showMessages">
+                <div class="post">
+<?php $_b->templates['9adca0ca0c']->renderChildTemplate("../components/room/printMessages.latte", $template->getParameters()) ?>
+                </div>          
+                <div class="post">
+                    <div class="post_body">
+                        <blockquote>
 <?php $_l->tmp = $_control->getComponent("messageForm"); if ($_l->tmp instanceof Nette\Application\UI\IRenderable) $_l->tmp->redrawControl(NULL, FALSE); $_l->tmp->render() ?>
-                    </blockquote>
-                </div>
-            </div>
-<?php } ?>
-        </div>
-    </div>
-
-    <div class="right" id="sidebar_outer">
-        <div id="sidebar">
-            <div class="box">
-                <div class="box_title">Users</div>
-                    <div class="box_content">
-<?php $iterations = 0; foreach ($members as $member) { ?>                        <div>
-                        <a href="<?php echo Latte\Runtime\Filters::escapeHtml($_control->link("Homepage:profile", array($member->id_users)), ENT_COMPAT) ?>
-"><blockquote><p><?php echo Latte\Runtime\Filters::escapeHtml($member->login, ENT_NOQUOTES) ?></p></blockquote></a>
-                        </div>
-<?php $iterations++; } ?>
+                        </blockquote>
                     </div>
+                </div>
+                </div>        
+                <div id="showInfo">    
+                    <div class="post">
+<?php $_b->templates['9adca0ca0c']->renderChildTemplate("../components/room/printInformation.latte", $template->getParameters()) ?>
+                    </div>
+                </div>             
+<?php } ?>
+            </div>
+        </div>
+
+        <div class="right" id="sidebar_outer">
+            <div id="sidebar">
+                <div class="box">
+<?php $_b->templates['9adca0ca0c']->renderChildTemplate("../components/room/printUsers.latte", $template->getParameters()) ?>
                 </div> 
 
-            <div class="box">
-                <div class="box_title">Administrators</div>
-                <div class="box_content">                    
-<?php $iterations = 0; foreach ($admins as $admin) { ?>                        <div>
-                        <a href="<?php echo Latte\Runtime\Filters::escapeHtml($_control->link("Homepage:profile", array($admin->id_users)), ENT_COMPAT) ?>
-"><div id="avatar"><p><?php echo Latte\Runtime\Filters::escapeHtml($admin->login, ENT_NOQUOTES) ?></p></div></a>
-                        </div>
-<?php $iterations++; } ?>
-                </div>
-                <div class="box_content">                    
-                        </div>
+                <div class="box">
+<?php $_b->templates['9adca0ca0c']->renderChildTemplate("../components/room/printAdministrators.latte", $template->getParameters()) ?>
                 </div>
             </div>
-       </div>                 
-    <div class="clearer">&nbsp;</div>
-</div>
+        </div>                 
+        <div class="clearer">&nbsp;</div>
+    </div>
+<?php } elseif ($localRoom->lock == 't') { ?>
+    <center>This room is locked</center>                          
 <?php } 
 }}
 
@@ -160,5 +143,5 @@ if (empty($_l->extends) && !empty($_control->snippetMode)) {
 // main template
 //
 if ($_l->extends) { ob_end_clean(); return $template->renderChildTemplate($_l->extends, get_defined_vars()); }
-call_user_func(reset($_b->blocks['field']), $_b, get_defined_vars()) ; call_user_func(reset($_b->blocks['content']), $_b, get_defined_vars()) ; 
+call_user_func(reset($_b->blocks['content']), $_b, get_defined_vars()) ; 
 }}

@@ -1,112 +1,101 @@
-{block field}
-<div id="layout_body2">
-    <div id="navigation2">
-        <div id="nav4">
-            <a n:href="Sign:out">Logout</a>
-            <div class="clearer">&nbsp;</div>
-        </div>  
-        <div class="clearer">&nbsp;</div>
-    </div>
-</div>
-
-<div id="layout_body2">
-    <div id="navigation2">
-        <div id="nav3">
-            <a n:href="Homepage:profile  $thisUserID">Profile</a>
-            <div class="clearer">&nbsp;</div>
-        </div>  
-        <div class="clearer">&nbsp;</div>
-    </div>
-</div>
-{/block}
+{**
+ * Displays list of rooms, messages in chat, online administrators, online members and permission buttons.
+ *}
 {block content}
+{snippet roomSnip}
 <div id="navigation">
     <div id="nav1">
         <ul>
-            <div n:foreach="$rooms as $room" class="post">                
-            <li {if $room->id_rooms == $thisRoomID} class="current_room" {/if}>
-                <a n:href="Debate:room $room->id_rooms">{$room->title}</a>   
-            </li>
-            </div>
-            <div class="post"><li><a n:href="Homepage:create">►</a></li></div>
+            {include ../components/room/printRooms.latte} 
         </ul>
         <div class="clearer">&nbsp;</div>
     </div>
     
     <div id="nav2">
-        <ul>
-            <li><a n:href="Debate:info $thisRoomID">Information</a></li>
-            {if ($thisOwner > 0)||($thisUser->role == 'admin')}
-            {if ($thisRoomID != 1)&&($thisRoomID != 2)}
-            <li><a n:href="Debate:rename $thisRoomID">Rename</a></li>
-            {/if}
-            <li><a n:href="Debate:lock $thisRoomID">{if $thisRoomLock > 0}Lock{else}Unlock{/if}</a></li>
-            {if ($thisRoomID != 1)&&($thisRoomID != 2)}
-            <li><a n:href="Debate:delete $thisRoomID">Delete</a></li>
-            {/if}
+        <ul >
+            <li><a href="#" id="information">Information</a></li>
+                
+            {if ($localUser->id_users == $owner->id_users)||($localUser->role == 'admin')}
+            
+                {if ($localRoom->id_rooms != 1)&&($localRoom->id_rooms != 2)}
+                    <li><a n:href="rename! $localRoom->id_rooms" class="ajax">Rename</a></li>
+                {/if}
+                
+                    <li><a n:href="lock!" class="ajax">
+                            {if $localRoom->lock == 'f'}Lock{else}Unlock{/if}
+                        </a>
+                    </li>
+                    
+                {if ($localRoom->id_rooms != 1)&&($localRoom->id_rooms != 2)}
+                    <li><a n:href="delete! $localRoom->id_rooms">Delete</a></li>
+                {/if}
+                
             {/if}
         </ul>
         <div class="clearer">&nbsp;</div>
-    </div>
+    </div>       
 </div>
-{if $thisRoom->lock == 't'}
-    <center>This room is locked</center>
-{elseif $thisRoom->lock == 'f'}
-<div id="main"{$_POST['roomId']= $thisRoomID}>
-    <div class="left" id="content_outer">
-        <div id="content">
-        {if $isRename > 0}
-            <div class="post" >	
-            {control renameForm}
-            </div>
-        {else}
-            <div class="post">				
-                <div class="post_messages"> 
-     {foreach $messages as $message}
-         {if ($message->id_users_from == $message->id_users_to)||($thisUserID == $message->id_users_to)||($thisUserID == $message->id_users_from)}
-        <div class="date">{$message->time|date:'F j, Y'}</div>
-        <p><b><a href="{$message->id_messages}" >{$message->login}</a></b> </p>
-        <div>{$message->message}</div><br />
-        {/if}
-    {/foreach}
+            
+{if $localRoom->lock == 'f'}
+    <div id="main" {$_POST['roomId']= $localRoom->id_rooms}>
+        <div class="left" id="content_outer">
+            <div id="content">
+            {if $localRoom->rename == 't'}
+                <div class="post" >	
+                {control renameForm}
                 </div>
-            </div>
-
-            <div class="post">
-                <div class="post_body">
-                    <blockquote>
-                     {control messageForm}
-                    </blockquote>
-                </div>
-            </div>
-         {/if}
-        </div>
-    </div>
-
-    <div class="right" id="sidebar_outer">
-        <div id="sidebar">
-            <div class="box">
-                <div class="box_title">Users</div>
-                    <div class="box_content">
-                        <div n:foreach="$members as $member">
-                        <a n:href="Homepage:profile $member->id_users"><blockquote><p>{$member->login}</p></blockquote></a>
-                        </div>
+            {else}
+                <div id="showMessages">
+                <div class="post">
+                        {include ../components/room/printMessages.latte}    
+                </div>          
+                <div class="post">
+                    <div class="post_body">
+                        <blockquote>
+                         {control messageForm}
+                        </blockquote>
                     </div>
+                </div>
+                </div>        
+                <div id="showInfo">    
+                    <div class="post">
+                        {include ../components/room/printInformation.latte} 
+                    </div>
+                </div>             
+             {/if}
+            </div>
+        </div>
+
+        <div class="right" id="sidebar_outer">
+            <div id="sidebar">
+                <div class="box">
+                    {include ../components/room/printUsers.latte} 
                 </div> 
 
-            <div class="box">
-                <div class="box_title">Administrators</div>
-                <div class="box_content">                    
-                        <div n:foreach="$admins as $admin">
-                        <a n:href="Homepage:profile $admin->id_users"><div id="avatar"><p>{$admin->login}</p></div></a>
-                        </div>
-                </div>
-                <div class="box_content">                    
-                        </div>
+                <div class="box">
+                    {include ../components/room/printAdministrators.latte} 
                 </div>
             </div>
-       </div>                 
-    <div class="clearer">&nbsp;</div>
-</div>
+        </div>                 
+        <div class="clearer">&nbsp;</div>
+    </div>
+{elseif $localRoom->lock == 't'}
+    <center>This room is locked</center>                          
 {/if}
+{/snippet}
+<script>
+    $(".post_messages").scrollTop($(".post_messages")[0].scrollHeight);
+    $(document).ready(function() {   
+        $('#information').click(function() {
+                if(document.getElementById('showInfo').style.display === "none"){
+                  document.getElementById('showMessages').style.display= "none";
+                  document.getElementById('showInfo').style.display = "block";
+                }else{
+                  document.getElementById('showInfo').style.display = "none";
+                  document.getElementById('showMessages').style.display= "block";
+                }
+                return false;
+        });
+    });
+</script> 
 {/block}

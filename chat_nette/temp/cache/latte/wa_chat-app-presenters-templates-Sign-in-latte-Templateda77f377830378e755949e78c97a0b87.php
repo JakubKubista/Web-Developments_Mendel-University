@@ -9,12 +9,12 @@ list($_b, $_g, $_l) = $template->initialize('75adcb4bc8', 'html')
 ;
 // prolog Latte\Macros\BlockMacros
 //
-// block field
+// block notLoggedHeaderButtons
 //
-if (!function_exists($_b->blocks['field'][] = '_lbac49f45f2a_field')) { function _lbac49f45f2a_field($_b, $_args) { foreach ($_args as $__k => $__v) $$__k = $__v
+if (!function_exists($_b->blocks['notLoggedHeaderButtons'][] = '_lb9cbce1c0bf_notLoggedHeaderButtons')) { function _lb9cbce1c0bf_notLoggedHeaderButtons($_b, $_args) { foreach ($_args as $__k => $__v) $$__k = $__v
 ?><div id="layout_body2">
     <div id="navigation2">
-        <div id="nav5">
+        <div id="nav_big">
             <a href="<?php echo Latte\Runtime\Filters::escapeHtml($_control->link("Sign:regist"), ENT_COMPAT) ?>
 ">Registration</a>
             <div class="clearer">&nbsp;</div>
@@ -69,5 +69,5 @@ if (empty($_l->extends) && !empty($_control->snippetMode)) {
 // main template
 //
 if ($_l->extends) { ob_end_clean(); return $template->renderChildTemplate($_l->extends, get_defined_vars()); }
-call_user_func(reset($_b->blocks['field']), $_b, get_defined_vars()) ; call_user_func(reset($_b->blocks['content']), $_b, get_defined_vars()) ; 
+call_user_func(reset($_b->blocks['notLoggedHeaderButtons']), $_b, get_defined_vars()) ; call_user_func(reset($_b->blocks['content']), $_b, get_defined_vars()) ; 
 }}

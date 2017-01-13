@@ -1,43 +1,20 @@
-{block field}
-<div id="layout_body2">
-    <div id="navigation2">
-        <div id="nav4">
-            <a n:href="Sign:out">Logout</a>
-            <div class="clearer">&nbsp;</div>
-        </div>  
-        <div class="clearer">&nbsp;</div>
-    </div>
-</div>
-
-<div id="layout_body2">
-    <div id="navigation2">
-        <div id="nav3">
-            <a n:href="Homepage:profile $thisUserID">Profile</a>
-            <div class="clearer">&nbsp;</div>
-        </div>  
-        <div class="clearer">&nbsp;</div>
-    </div>
-</div>
-{/block}
+{**
+ * Displays list of rooms and form for editation of local user.
+ *}
 {block content}
 <div id="navigation">
     <div id="nav1">
         <ul>
-            <div n:foreach="$rooms as $room" class="post">
-            <li><a n:href="Debate:room $room->id_rooms">{$room->title}</a></li>
-            </div>
-            <div class="post"><li><a n:href="Homepage:create">►</a></li></div>
+            {include ../components/global/printRooms.latte} 
         </ul>
         <div class="clearer">&nbsp;</div>
     </div>
 </div>
             
 <div id="main">
-            <div n:foreach="$users as $thisUser" >
-                <div id="sidebar">
-                     {control editForm}
-            </div>
-        </div>
+    <div id="sidebar">
+        {control editForm}
     </div>
-    <div class="clearer">&nbsp;</div>
+</div>
+<div class="clearer">&nbsp;</div>
 {/block}

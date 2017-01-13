@@ -1,0 +1,9 @@
+{**
+ * Displays all members in a local room.
+ *}
+<div class="box_title">Users</div>
+<div class="box_content">
+    <div n:foreach="$members as $member">
+    <a n:href="Homepage:profile $member->id_users" ><blockquote><p>{$member->login}</p></blockquote></a>
+    </div>
+</div>

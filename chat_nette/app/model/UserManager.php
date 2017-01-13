@@ -3,12 +3,10 @@
 namespace App\Model;
 
 use Nette,
-	Nette\Utils\Strings,
 	Nette\Security\Passwords;
 
-
 /**
- * Users management.
+ * Users management cares about security when is user logging.
  */
 class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 {

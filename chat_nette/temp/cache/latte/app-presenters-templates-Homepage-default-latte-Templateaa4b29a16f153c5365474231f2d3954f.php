@@ -9,58 +9,27 @@ list($_b, $_g, $_l) = $template->initialize('c1e69e0d7b', 'html')
 ;
 // prolog Latte\Macros\BlockMacros
 //
-// block field
-//
-if (!function_exists($_b->blocks['field'][] = '_lb0e7ceaa3a8_field')) { function _lb0e7ceaa3a8_field($_b, $_args) { foreach ($_args as $__k => $__v) $$__k = $__v
-?><div id="layout_body2">
-    <div id="navigation2">
-        <div id="nav4">
-            <a href="<?php echo Latte\Runtime\Filters::escapeHtml($_control->link("Sign:out"), ENT_COMPAT) ?>
-">Logout</a>
-            <div class="clearer">&nbsp;</div>
-        </div>  
-        <div class="clearer">&nbsp;</div>
-    </div>
-</div>
-
-<div id="layout_body2">
-    <div id="navigation2">
-        <div id="nav3">
-            <a href="<?php echo Latte\Runtime\Filters::escapeHtml($_control->link("Homepage:profile", array($thisUserID)), ENT_COMPAT) ?>
-">Profile</a>
-            <div class="clearer">&nbsp;</div>
-        </div>  
-        <div class="clearer">&nbsp;</div>
-    </div>
-</div>
-<?php
-}}
-
-//
 // block content
 //
 if (!function_exists($_b->blocks['content'][] = '_lb0b8d65a7c5_content')) { function _lb0b8d65a7c5_content($_b, $_args) { foreach ($_args as $__k => $__v) $$__k = $__v
 ?><div id="navigation">
     <div id="nav1">
         <ul>
-<?php $iterations = 0; foreach ($rooms as $room) { ?>            <div class="post">
-            <li><a href="<?php echo Latte\Runtime\Filters::escapeHtml($_control->link("Debate:room", array($room->id_rooms)), ENT_COMPAT) ?>
-"><?php echo Latte\Runtime\Filters::escapeHtml($room->title, ENT_NOQUOTES) ?></a></li>
-            </div>
-<?php $iterations++; } ?>
-            <div class="post"><li><a href="<?php echo Latte\Runtime\Filters::escapeHtml($_control->link("Homepage:create"), ENT_COMPAT) ?>
-">►</a></li></div>
+<?php $_b->templates['c1e69e0d7b']->renderChildTemplate("../components/global/printRooms.latte", $template->getParameters()) ?>
         </ul>
         <div class="clearer">&nbsp;</div>
     </div>
 </div>
 <div id="main">
     <div class="left" id="content_outer">
-        <div id="content"><div class="post" >	<br><b>    
-            Wellcome <i><?php echo Latte\Runtime\Filters::escapeHtml($thisUser->name, ENT_NOQUOTES) ?></i>,<br>
-            If you want, you can create a new room by the click on arrow or you can join to any created room. 
-            Have a nice chat. - <i>Admin</i></b>
-        </div> </div>
+        <div id="content">
+            <div class="post" >	
+                <br><b>    
+                Wellcome <i><?php echo Latte\Runtime\Filters::escapeHtml($localUser->name, ENT_NOQUOTES) ?></i>,<br>
+                If you want, you can create a new room by the arrow button or you can join to some created room. 
+                Have a nice chat. - <i>Admin</i></b>
+            </div> 
+        </div>
     </div><div class="clearer">&nbsp;</div>
 </div> 
 <?php
@@ -87,5 +56,5 @@ if (empty($_l->extends) && !empty($_control->snippetMode)) {
 // main template
 //
 if ($_l->extends) { ob_end_clean(); return $template->renderChildTemplate($_l->extends, get_defined_vars()); }
-call_user_func(reset($_b->blocks['field']), $_b, get_defined_vars()) ; call_user_func(reset($_b->blocks['content']), $_b, get_defined_vars()) ; 
+call_user_func(reset($_b->blocks['content']), $_b, get_defined_vars()) ; 
 }}

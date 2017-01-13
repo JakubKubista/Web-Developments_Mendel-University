@@ -6,7 +6,10 @@ use Nette,
 	Nette\Application\UI\Form,
 	Nette\Security\User;
 
-
+/**
+ * Factory allow sign a user from table users into the application by forms.
+ * The form cooperates with the model UserManager, represents security of login.
+ */
 class SignFormFactory extends Nette\Object
 {
 	/** @var User */
@@ -20,6 +23,7 @@ class SignFormFactory extends Nette\Object
 
 
 	/**
+         * Function represents the form for login.
 	 * @return Form
 	 */
 	public function create()
@@ -27,14 +31,10 @@ class SignFormFactory extends Nette\Object
 		$form = new Form;
 		$form->addText('login', 'Name:')           
 			->setRequired('Please enter your name.');
-                        /*    
-                        ->addRule(FORM::EMAIL,"This is not email");
-                        */
+
 		$form->addPassword('password', 'Password:')
 			->setRequired('Please enter your password.');
-                /*
-                        ->addRule(FORM::MIN_LENGTH,"Heslo musi byt min %d",6);
-                */
+
 		$form->addCheckbox('remember', 'Keep me signed in');
 
 		$form->addSubmit('send', 'Sign in');
@@ -45,7 +45,9 @@ class SignFormFactory extends Nette\Object
 		return $form;
 	}
 
-
+	/**
+         * Function sign in user with authentication by the previous creation of form.
+	 */
 	public function formSucceeded($form, $values)
 	{
 		if ($values->remember) {

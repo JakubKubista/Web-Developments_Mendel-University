@@ -1,50 +1,63 @@
 {**
+ * Release date: 2017-13-01
+ * Author: Jakub Kubista
+ * 
  * @param string   $basePath web base path
  * @param array    $flashes  flash messages
  *}
 
 <!DOCTYPE html>
 <html>
-<head>
+    <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <meta name="keywords" content="" />
         <meta name="description" content="" />
+
+        <title>{ifset title}{include title|striptags} | {/ifset}Online Chat</title>
+
+        <link rel="stylesheet" href="{$basePath}/css/style.css">
+        <link rel="shortcut icon" href="{$basePath}/favicon.ico">
         
-	<title>{ifset title}{include title|striptags} | {/ifset}Online Chat</title>
+        {block head}{/block}
+        
+    </head>
 
-	<link rel="stylesheet" href="{$basePath}/css/style.css">
-	<link rel="shortcut icon" href="{$basePath}/favicon.ico">
-	{block head}{/block}
-</head>
-
-<body id="top">
-	<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
-	{block scripts}
-	<script src="{$basePath}/js/jquery-2.1.3.min.js"></script>     
-        <script>
-            var $basePath2 = {$basePath};
-        </script>
-	<script src="{$basePath}/js/ajax.js"></script>
-     
-<div id="layout_wrapper_outer">
-    <div id="layout_wrapper">   
-        <div id="layout_top">
-            <div id="site_title">
-                <h1><a n:href="Homepage:"><span>Online</span> Chat</a></h1>
+    <body id="top">
+        <div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+        
+        {block scripts} 
+            <script src="{$basePath}/js/jquery.js"></script>
+            <script src="{$basePath}/js/nette.ajax.js"></script>
+            <script src="{$basePath}/js/nette-start.js"></script>
+        {/block}
+            
+        <div id="layout_wrapper_outer">
+            <div id="layout_wrapper"> 
+                
+                <div id="layout_top">
+                    <div id="site_title">
+                        <h1><a n:href="Homepage:"><span>Online</span> Chat</a></h1>
+                    </div>
+                    {if $user->loggedIn}
+                        {include components/global/loggedHeaderButtons.latte}
+                    {else}
+                        {include notLoggedHeaderButtons}
+                    {/if}
+                </div>
+                
+                <div id="layout_body_outer">
+                    <div id="layout_body">
+                        {include content}
+                    </div>
+                </div>
+                    
+                <div id="footer">
+                    <div class="left">Copyright &copy; 2017 Jakub Kubišta - Chat</div>		
+                    <div class="clearer">&nbsp;</div>
+                </div>
+                    
             </div>
-            {include field}
         </div>
-        <div id="layout_body_outer">
-            <div id="layout_body">
-                {include content}
-            </div>
-        </div>
-        <div id="footer">
-            <div class="left">&copy; 2015 Jakub Kubišta - WA</div>		
-            <div class="clearer">&nbsp;</div>
-        </div>
-    </div>
-</div>
-{/block}
-</body>
+                    
+    </body>
 </html>

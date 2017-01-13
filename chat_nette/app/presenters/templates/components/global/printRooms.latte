@@ -1,0 +1,13 @@
+{**
+ * Displays all rooms without any local room.
+ *}
+<div n:foreach="$rooms as $room" class="post">
+    <li>
+        <a n:href="Debate:room $room->id_rooms">{$room->title}</a>
+    </li>
+</div>
+<div class="post">
+    <li>
+        <a n:href="Homepage:create">►</a>
+    </li>
+</div>

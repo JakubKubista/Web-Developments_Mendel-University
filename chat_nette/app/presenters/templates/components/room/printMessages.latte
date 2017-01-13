@@ -1,0 +1,14 @@
+{**
+ * Displays all messages in a local room.
+ *}
+<div class="post_messages"> 
+{foreach $messages as $message}
+    {if ($message->id_users_from == $message->id_users_to)||
+        ($localUser->id_users == $message->id_users_to)||
+        ($localUser->id_users == $message->id_users_from)}
+        <div id="date" class="ajax" >{$message->time|date:'F j, Y'}</div>
+        <p><b><a n:href="Homepage:profile $message->id_users_from" >{$message->login}</a></b> </p>
+        <div class="ajax" >{$message->message}</div><br />
+    {/if}
+{/foreach}
+</div> 

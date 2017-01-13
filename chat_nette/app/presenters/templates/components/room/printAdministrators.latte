@@ -1,0 +1,9 @@
+{**
+ * Displays all administrators in a local room.
+ *}
+<div class="box_title">Administrators</div>
+<div class="box_content">                    
+        <div n:foreach="$admins as $admin">
+        <a n:href="Homepage:profile $admin->id_users"><div id="avatar"><p>{$admin->login}</p></div></a>
+        </div>
+</div>

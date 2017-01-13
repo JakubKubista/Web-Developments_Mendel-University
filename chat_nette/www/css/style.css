@@ -1,5 +1,5 @@
 /*  
-Release date: 2015-29-04
+Release date: 2017-13-01
 Author: Jakub Kubista
 */
 
@@ -146,9 +146,9 @@ input, textarea, select {
         margin: 7px 15px;
 }
 textarea{
-    width: 522px;
-    resize: none;
-    overflow: auto;
+        width: 522px;
+        resize: none;
+        overflow: auto;
 }
 input2{
         width: 200px;
@@ -169,9 +169,9 @@ button{
 	color: #777;
 	font: bold 1.3em sans-serif;
 	padding: 6px 10px;
-    width: 100px;
-    position:relative;
-    left: 452px;
+        width: 100px;
+        position:relative;
+        left: 452px;
 }
 input:focus,input:active,textarea:focus,textarea:active,select:focus,select:active,input.button:hover,input.button:focus {background: #FFFFF5;}
 input.button:hover, input.button:focus {
@@ -187,9 +187,10 @@ input.image {
 }
 
 /* Site title */
-#site_title {padding: 28px 12px 0;
-             background: url('../images/chat-icon.png') no-repeat;
-             background-position: 30px 4px;
+#site_title {
+        padding: 28px 12px 0;
+        background: url('../images/chat-icon.png') no-repeat;
+        background-position: 30px 4px;
 }
 #site_title a {
 	color: #C60000;
@@ -236,7 +237,7 @@ max-width: 650px;
 	padding: 10px 12px 12px;
 }
 #nav1 a:hover {color: #EEE;}
-#nav1 li.current_page_item a,#nav1 li.current_page_parent a {
+#nav1 li.current_room a,#nav1 li.current_room a {
 	background: url('../images/nav1_arrow.gif') no-repeat center bottom;
 	color: #FFEBEB;	
 }
@@ -251,76 +252,79 @@ max-width: 650px;
 	padding: 0 8px;
 }
 #nav2 a:hover {color: #FFFFFF; opacity: 0.7;}
-#nav2 li.current_page_item a {color: #FFF;}
+#nav2 li.current_room a {color: #FFF;}
 
-#nav3 a {
+#nav_middle a {
 	color: #FFEBEB;
 	padding: 10px;
         position: relative;
         left: 18px;
 }
-#nav3 {
+#nav_middle {
 	background: #5090AE url('../images/nav2.gif') repeat;
-        padding-top: -30px;
+        /*padding-top: -30px;*/
         width: 112px;
         border-radius:6px 6px 0px 0px;
 }
-#nav3 :hover {
-    background: #5090AE url('../images/layout_body_outer2.jpg') repeat; 
-    width: 103px;
-    left:-8px;
-    border-radius:6px 6px 0px 0px;
+#nav_middle :hover {
+        background: #5090AE url('../images/layout_body_outer2.jpg') repeat; 
+        width: 103px;
+        left:-8px;
+        border-radius:6px 6px 0px 0px;
 }
-#nav3 a:hover {color: #FFF;}
-#nav3 li.current_page_item a {color: #FFF;}
+#nav_middle a:hover {color: #FFF;}
+#nav_middle li.current_room a {color: #FFF;}
 
-#nav4 a {
+#nav_small a {
 	color: #FFEBEB;
 	padding: 10px;
         position: relative;
         left: 18px;
 }
-#nav4 {
+#nav_small {
 	background: #5090AE url('../images/layout_body_outer2.jpg') repeat;
-        padding-top: -30px;
+        /*padding-top: -30px;*/
         width: 112px;
         border-radius:6px 6px 0px 0px;
 }
-#nav4 :hover {
-    background: #5090AE url('../images/nav2.gif') repeat; 
-    width: 92px;
-    left:0px;
-    border-radius:6px 6px 0px 0px;
+#nav_small :hover {
+        background: #5090AE url('../images/nav2.gif') repeat; 
+        width: 92px;
+        left:0px;
+        border-radius:6px 6px 0px 0px;
 }
-#nav4 a:hover {color: #FFF;}
-#nav4 li.current_page_item a {color: #FFF;}
+#nav_small a:hover {color: #FFF;}
+#nav_small li.current_room a {color: #FFF;}
 
-#nav5 a {
+#nav_big a {
 	color: #FFEBEB;
 	padding: 10px;
         position: relative;
         left:-2px;
 }
-#nav5{
-	background: #5090AE url('../images/nav2.gif') repeat;
-        padding-top: -30px;
+#nav_big{
+        background: #5090AE url('../images/layout_body_outer2.jpg') repeat; 
+        /*padding-top: -30px;*/
         width: 112px;
         border-radius:6px 6px 0px 0px;
 }
-#nav5 :hover {
-    background: #5090AE url('../images/layout_body_outer2.jpg') repeat; 
-    width: 103px;
-    left:-5px;
-    border-radius:6px 6px 0px 0px;
+#nav_big :hover {
+	background: #5090AE url('../images/nav2.gif') repeat;
+        width: 103px;
+        left:-5px;
+        border-radius:6px 6px 0px 0px;
 }
-#nav5 a:hover {color: #FFF;}
-#nav5 li.current_page_item a {color: #FFF;}
+#nav_big a:hover {color: #FFF;}
+#nav_big li.current_room a {color: #FFF;}
 
 #nav6{
-        float:center;
+        /*float:center;*/
+
+        margin: 0 auto; 
         width: 80px;
         border: 1px solid;
         background: #FFEBEB;
+        text-align: center;
 }
 #nav6 a{
 	text-decoration: none;
@@ -369,12 +373,12 @@ max-width: 650px;
 /* Posts */
 .post {margin-bottom: 24px;}
 .post_messages a {
-    text-decoration: none;
-    color: #345; 
+        text-decoration: none;
+        color: #345; 
 }
 .post_messages a:hover {
-    text-decoration: underline;
-    color: #001;
+        text-decoration: underline;
+        color: #001;
 }
 .post_messages {
 	background: #E7E7E7;
@@ -399,3 +403,7 @@ max-width: 650px;
 }
 .box_content {padding: 8px 0 8px;}
 .box li:first-child {border-top: none;}
+
+/* Info Room */
+#showInfo{display: none;}
+#showMessages{display: block;}

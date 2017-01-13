@@ -3,259 +3,181 @@
 namespace App\Presenters;
 
 use Nette,
-        Nette\Application\UI\Form,
-        App\Model;
-
+	App\Forms\MessageFormFactory,   
+	App\Forms\EditRoomFormFactory,     
+        App\Model\Room, 
+        App\Core\RoomManager;
 
 /**
- * Homepage presenter.
+ * Debate presenter accepts inputs of data manipulation from Debate templates.
+ * Render data from all tables from database (supported by Room model),
+ * such as information about room, users, messages etc.
+ * Sending commands to change database by Room Manager, MessageFormFactory and EditRoomFormFactory.
  */
 class DebatePresenter extends BasePresenter
 {
     /** @var Nette\Database\Context */
     private $database;
-       
-    public function __construct(Nette\Database\Context $database)
-    {
-        $this->database = $database;
-    }
-    
-      public function renderGroups()
-    {
-        $this->template->posts = $this->database->table('posts')
-            ->order('id ASC')
-            ->limit(3);
-    }
-    
-    public function renderRoom($roomId)
-    {
-        $userId = $this->user->getIdentity()->getId();
-        $this->template->rooms = $this->database->table('rooms');
-        $message = $this->database->table('messages');
-        $this->template->thisUserID =  $userId;
-        $this->template->thisUser =  $this->database->table('users')->get($userId);   
-        $this->template->thisRoomID = $roomId;
-        $this->template->thisRoomLock = count($this->database->table('rooms')->where('id_rooms=? AND lock=?', $roomId,'f'));
-        $this->template->isRename = count($this->database->table('rooms')->where('id_rooms=? AND rename=?', $roomId,'t'));
-        $this->template->thisRoom =  $this->database->table('rooms')->get($roomId);
-        
-        $this->template->messages = $this->database->query('
-            SELECT * FROM messages
-            JOIN users ON messages.id_users_from = users.id_users
-            WHERE messages.id_rooms = ?', $roomId, ' ORDER BY id_messages DESC'); 
 
-        $this->template->thisOwner = count($this->database->table('rooms')->where('id_rooms=? AND id_users_owner=?', $roomId,$userId));
-        $this->database->table('in_room')->where('id_users=?',$userId)->delete();
-        $this->database->table('in_room')->insert(array(
-            'id_rooms' => $roomId,
-            'id_users' => $userId,
-        )); 
-        
-        $this->template->admins = $this->database->query('
-        SELECT in_room.id_users,users.login  FROM in_room
-        JOIN users ON in_room.id_users = users.id_users
-        WHERE in_room.id_rooms=? AND users.role=?', $roomId,'admin'); 
-        
-        $this->template->members = $this->database->query('
-        SELECT in_room.id_users,users.login  FROM in_room
-        JOIN users ON in_room.id_users = users.id_users
-        WHERE in_room.id_rooms=? AND users.role!=?', $roomId,'admin'); 
-        
-        $this->template->users = $this->database->query('
-        SELECT in_room.id_users,users.login  FROM in_room
-        JOIN users ON in_room.id_users = users.id_users
-        WHERE in_room.id_rooms=?', $roomId); 
-    }
+    /** @var MessageFormFactory @inject */
+    public $messageFactory;
     
+    /** @var EditRoomFormFactory @inject */
+    public $editRoomFactory;
     
-    public function renderInfo($roomId)
-    {
-        $userId = $this->user->getIdentity()->getId();
-        $this->template->rooms = $this->database->table('rooms');
-        $this->template->actualRoom = $this->database->query('
-            SELECT * FROM rooms
-            JOIN users ON rooms.id_users_owner = users.id_users
-            WHERE rooms.id_rooms = ?', $roomId); 
-        $this->template->thisUserID =  $userId;
-        $this->template->thisUser =  $this->database->table('users')->get($userId);   
-        $this->template->thisRoomID = $roomId;
-        $this->template->thisRoomLock = count($this->database->table('rooms')->where('id_rooms=? AND lock=?', $roomId,'f'));
-        $this->template->isRename = count($this->database->table('rooms')->where('id_rooms=? AND rename=?', $roomId,'t'));
-        $this->template->thisRoom =  $this->database->table('rooms')->get($roomId);
-        $this->template->thisOwner = count($this->database->table('rooms')->where('id_rooms=? AND id_users_owner=?', $roomId,$userId));
-    
-        $this->database->table('in_room')->where('id_users=?',$userId)->delete();
-        $this->database->table('in_room')->insert(array(
-            'id_rooms' => $roomId,
-            'id_users' => $userId,
-        )); 
-        
-        $this->template->admins = $this->database->query('
-        SELECT in_room.id_users,users.login  FROM in_room
-        JOIN users ON in_room.id_users = users.id_users
-        WHERE in_room.id_rooms=? AND users.role=?', $roomId,'admin'); 
-        
-        $this->template->members = $this->database->query('
-        SELECT in_room.id_users,users.login  FROM in_room
-        JOIN users ON in_room.id_users = users.id_users
-        WHERE in_room.id_rooms=? AND users.role!=?', $roomId,'admin'); 
-        
-        $this->template->users = $this->database->query('
-        SELECT in_room.id_users,users.login  FROM in_room
-        JOIN users ON in_room.id_users = users.id_users
-        WHERE in_room.id_rooms=?', $roomId); 
-    } 
-   
-	public function actionLock($roomId)
+    private $roomModel;
+    private $roomManager;
+       
+        public function __construct(Nette\Database\Context $database, Room $roomModel, RoomManager $roomManager)
+        {
+            $this->database = $database;
+            $this->roomModel = $roomModel;
+            $this->roomManager = $roomManager;
+        }
+
+        /**
+         * Function for render Room template.
+         * Include views on selections of table from database (selected by Room model).
+         * @param  int
+	 * @return void
+         */
+        public function renderRoom($roomId)
+        {
+            $user = $this->user->getIdentity();
+            $room = $this->database->table('rooms')->get($roomId);
+
+            // Check if room exists and transfer local user inside.
+            if($this->roomManager->enterRoom($user->getId(), $roomId)==FALSE){
+                $this->flashMessage('The room does not exist');
+                $this->redirect("Homepage:default");  
+            }
+            
+            // All variables relate only to local room.
+            $this->template->localUser = $user;     
+            $this->template->localRoom = $room; 
+            $this->template->rooms = $this->database->table('rooms');
+            $this->template->owner = $this->roomModel->getOwner($roomId); 
+
+            $this->template->messages = $this->roomModel->getMessages($roomId);  
+            $this->template->admins = $this->roomModel->getAdmins($roomId);  
+            $this->template->members = $this->roomModel->getMembers($roomId);
+            $this->template->users =  $this->roomModel->getUsers($roomId); 
+        }
+
+        /**
+         * Handler function for lock local room. Ajax support.
+         * @param  int
+         */
+	public function handleLock($roomId)
 	{
-            $userId = $this->user->getIdentity()->getId();
-            $thisUser =  $this->database->table('users')->get($userId); 
-            $thisOwner = count($this->database->table('rooms')->where('id_rooms=? AND id_users_owner=?', $roomId,$userId));
-            $isLocked = count($this->database->table('rooms')->where('id_rooms=? AND lock=?', $roomId,'f'));
-            if (($thisOwner >0)||($thisUser->role == 'admin')){
-                if($isLocked >0){
-                    $this->database->table('rooms')->where('id_rooms = ?', $roomId)->update(array(
-                        'lock' => 't',
-                    ));
-                            $this->flashMessage('You locked room');
-                            $this->redirect("Debate:room", $roomId);  
+            $user = $this->user->getIdentity();
+            $owner = $this->roomModel->getOwner($roomId);
+            
+            // Can be solved by AclModel as well.
+            if (($owner->id_users == $user->getId())||($user->role != 'guest')){
+                
+                if(!$this->roomManager->isLocked($roomId)){
+                    $this->roomManager->lockRoom($roomId); 
+                    $lockString = "locked";
                 }else{
-                    $this->database->table('rooms')->where('id_rooms = ?', $roomId)->update(array(
-                        'lock' => 'f',
-                    ));
-                            $this->flashMessage('You unlocked room');
-                            $this->redirect("Debate:room", $roomId);
+                    $this->roomManager->unlockRoom($roomId); 
+                    $lockString = "unlocked";
                 }
+                
+                if ($this->isAjax()){
+                    $this->redrawControl("roomSnip");
+
+                }else{
+                    $this->flashMessage('You '.$lockString.' room');
+                    $this->redirect('this'); 
+                }
+                
             }else{
                 $this->flashMessage('You do not have permission');
-                $this->redirect("Debate:room", $roomId);
+                $this->redirect('this');
             }
 	}
-        
-	public function actionDelete($roomId)
+
+        /**
+         * Handler function for delete local room. 
+         * @param  int
+         */
+	public function handleDelete($roomId)
 	{
-            $userId = $this->user->getIdentity()->getId();
-            $thisUser =  $this->database->table('users')->get($userId); 
-            $thisOwner = count($this->database->table('rooms')->where('id_rooms=? AND id_users_owner=?', $roomId,$userId));
-            if (($thisOwner >0)||($thisUser->role == 'admin')){
-                $this->database->table('rooms')->where('id_rooms = ?', $roomId)->delete();
-                        $this->flashMessage('You deleted room');
+            $user = $this->user->getIdentity();
+            $owner = $this->roomModel->getOwner($roomId);
+            if (($owner->id_users == $user->getId())||($user->role != 'guest')){
+                $this->roomManager->deleteRoom($roomId);
+                        $this->flashMessage('The room has been deleted');
                         $this->redirect("Homepage:default");    
             }else{
                 $this->flashMessage('You do not have permission');
-                $this->redirect("Debate:room", $roomId);
+                $this->redirect('this');
             }
 	}
-        
-	public function actionRename($roomId)
+
+        /**
+         * Handler function for rename local room. Ajax support.
+         * @param  int
+         */
+	public function handleRename($roomId)
 	{
-            $userId = $this->user->getIdentity()->getId();
-            $thisUser =  $this->database->table('users')->get($userId); 
-            $thisOwner = count($this->database->table('rooms')->where('id_rooms=? AND id_users_owner=?', $roomId,$userId));
-            if (($thisOwner >0)||($thisUser->role == 'admin')){
-                    $this->database->table('rooms')->where('id_rooms = ?', $roomId)->update(array(
-                        'rename' => 't',
-                    ));
-                    $this->redirect("Debate:room", $roomId);
+            $user = $this->user->getIdentity();
+            $owner = $this->roomModel->getOwner($roomId);
+            if (($owner->id_users == $user->getId())||($user->role != 'guest')){
+                // Show form for rename local room.
+                $this->roomManager->enableRenameRoom($roomId);
+                    if ($this->isAjax()) {
+                        $this->redrawControl("roomSnip");
+
+                    }else{
+                        $this->redirect('this'); 
+                    }
             }else{
                 $this->flashMessage('You do not have permission');
-                $this->redirect("Debate:room", $roomId);
+                $this->redirect('this');
             }
 	}
-      
-    protected function createComponentRenameForm()
-    {
-        $form = new Form;
 
-        $roomId = $_GET['roomId'];
-        
-        $form->addText('title', 'Name:');
+        /**
+         * Function represents the component of form for rename local room. Ajax support.
+	 * @return Form
+         */
+        protected function createComponentRenameForm()
+        {       
+            // Solved by GET method to try HTTP request.
+            $roomId = $_GET['roomId'];
+            $this->roomManager->disableRenameRoom($roomId);
+                // Hide form for rename local room.
+            $form = $this->editRoomFactory->create($roomId);
+            $form->onSuccess[] = function ($form) {
+                if ($this->isAjax()) {
+                    $this->redrawControl("roomSnip");
+                }else{
+                    $this->flashMessage('The name of the room has been changed', 'success');
+                    $this->redirect('this');
+                }
+            };
+            return $form;           
+        }  
 
-        $form->addSubmit('send', 'Rename');
-        
-        $this->database->table('rooms')->where('id_rooms = ?', $roomId)->update(array(
-            'rename' => 'f',
-        ));
-        
-        $form->addProtection('Timeout, send the form again');
-        
-        $form->onSuccess[] = array($this, 'renameFormSucceeded');
-        
-        return $form;
-    } 
-    
-    public function renameFormSucceeded($form, $values)
-    {   
-        $roomId = $_GET['roomId'];
-        $this->database->table('rooms')->where('id_rooms = ?', $roomId)->update(array(
-            'title' => $values->title,
-        ));
-        $this->flashMessage('Rename successfully', 'success');
-        $this->redirect("Debate:room", $roomId);
-    }
-        
-        
-        
-   protected function createComponentMessageForm()
-    {
-        $form = new Form;
-        $form->getElementPrototype()->class('ajax');
-        $form->addTextArea('message', '')
-            ->setRequired();
-        $form->addHidden('id_rooms')->setDefaultValue($_GET['roomId']);
-        $form->addHidden('id_users_from')->setDefaultValue($this->user->getIdentity()->getId());
-        
-        $users = $this->database->query('
-        SELECT in_room.id_users,users.login  FROM in_room
-        JOIN users ON in_room.id_users = users.id_users
-        WHERE in_room.id_rooms=?', $_GET['roomId']); 
-        
-        $allUsers = array(
-            $this->user->getIdentity()->getId() => 'All',
-          );   
-         
-        foreach ($users as $user){
-            if($user->id_users!=$this->user->getIdentity()->getId()){
-             $allUsers[$user->id_users] =  $user->login;
-            }
-        }
-        
-        $form->addSelect('id_users_to', '', $allUsers);
-        
-        $form->addSubmit('send', 'Send');
-         //   ->setAttribute('onclick', 'sendChatText()');
-           
-    //    $json = json_encode($_GET['thisMessage']);
-        $form->onSuccess[] = array($this, 'messageFormSucceeded');
-
-    //  cross site
-        $form->addProtection();
-        return $form;
-    }
-   
-    public function messageFormSucceeded($form, $values)
-    {
-      
-        $this->database->table('messages')->insert(array(
-            'id_rooms' => $_GET['roomId'],
-            'id_users_from' => $this->user->getIdentity()->getId(),
-            'id_users_to' => $values->id_users_to,
-            'message' => $values->message,
-        ));
-        
-        $this->database->table('in_room')->where('id_rooms=?', $_GET['roomId'])->update(array(
-            'last_message' => time(),
-        ));
-        
-        
-        $this->flashMessage('Message has been send', 'success');
-    if (!$this->isAjax())
-        $this->redirect('this');
-    else {
-        
-        $this->invalidateControl('list');
-        $this->invalidateControl('form');
-        $form->setValues(array(), TRUE);
-   }
-    }  
+        /**
+         * Function represents the component of form for create new message in local room. Ajax support.
+	 * @return Form
+         */
+       protected function createComponentMessageForm()
+        {
+            $roomId = $_GET['roomId'];
+            $userId = $this->user->getIdentity()->getId();   
+            $form = $this->messageFactory->create($roomId, $userId);
+            $form->onSuccess[] = function ($form) {
+                if ($this->isAjax()) {
+                    $this->redrawControl("roomSnip");
+                }else{
+                    $this->flashMessage('Your message has been send', 'success');
+                    $this->redirect('this');
+                }
+            };
+            return $form;
+        }  
 }

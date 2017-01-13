@@ -22,8 +22,14 @@ class Container_a7e1383f93 extends Nette\DI\Container
 					'security.user',
 					'session.session',
 					'database',
-					'27_App_Forms_SignFormFactory',
-					'28_App_Model_UserManager',
+					'27_App_Core_RoomManager',
+					'28_App_Forms_EditRoomFormFactory',
+					'29_App_Forms_EditUserFormFactory',
+					'30_App_Forms_MessageFormFactory',
+					'31_App_Forms_RegisterFormFactory',
+					'32_App_Forms_SignFormFactory',
+					'33_App_Model_Room',
+					'34_App_Model_UserManager',
 					'application.1',
 					'application.2',
 					'application.3',
@@ -79,11 +85,25 @@ class Container_a7e1383f93 extends Nette\DI\Container
 			'Tracy\ILogger' => array(1 => array('tracy.logger')),
 			'Tracy\BlueScreen' => array(1 => array('tracy.blueScreen')),
 			'Tracy\Bar' => array(1 => array('tracy.bar')),
-			'App\Forms\SignFormFactory' => array(
-				1 => array('27_App_Forms_SignFormFactory'),
+			'App\Core\RoomManager' => array(1 => array('27_App_Core_RoomManager')),
+			'App\Forms\EditRoomFormFactory' => array(
+				1 => array('28_App_Forms_EditRoomFormFactory'),
 			),
-			'Nette\Security\IAuthenticator' => array(1 => array('28_App_Model_UserManager')),
-			'App\Model\UserManager' => array(1 => array('28_App_Model_UserManager')),
+			'App\Forms\EditUserFormFactory' => array(
+				1 => array('29_App_Forms_EditUserFormFactory'),
+			),
+			'App\Forms\MessageFormFactory' => array(
+				1 => array('30_App_Forms_MessageFormFactory'),
+			),
+			'App\Forms\RegisterFormFactory' => array(
+				1 => array('31_App_Forms_RegisterFormFactory'),
+			),
+			'App\Forms\SignFormFactory' => array(
+				1 => array('32_App_Forms_SignFormFactory'),
+			),
+			'App\Model\Room' => array(1 => array('33_App_Model_Room')),
+			'Nette\Security\IAuthenticator' => array(1 => array('34_App_Model_UserManager')),
+			'App\Model\UserManager' => array(1 => array('34_App_Model_UserManager')),
 			'App\Presenters\BasePresenter' => array(
 				array(
 					'application.1',
@@ -199,8 +219,14 @@ class Container_a7e1383f93 extends Nette\DI\Container
 			'Nette\DI\Container' => array(1 => array('container')),
 		),
 		'services' => array(
-			'27_App_Forms_SignFormFactory' => 'App\Forms\SignFormFactory',
-			'28_App_Model_UserManager' => 'App\Model\UserManager',
+			'27_App_Core_RoomManager' => 'App\Core\RoomManager',
+			'28_App_Forms_EditRoomFormFactory' => 'App\Forms\EditRoomFormFactory',
+			'29_App_Forms_EditUserFormFactory' => 'App\Forms\EditUserFormFactory',
+			'30_App_Forms_MessageFormFactory' => 'App\Forms\MessageFormFactory',
+			'31_App_Forms_RegisterFormFactory' => 'App\Forms\RegisterFormFactory',
+			'32_App_Forms_SignFormFactory' => 'App\Forms\SignFormFactory',
+			'33_App_Model_Room' => 'App\Model\Room',
+			'34_App_Model_UserManager' => 'App\Model\UserManager',
 			'application.1' => 'App\Presenters\DebatePresenter',
 			'application.2' => 'App\Presenters\ErrorPresenter',
 			'application.3' => 'App\Presenters\HomepagePresenter',
@@ -292,9 +318,59 @@ class Container_a7e1383f93 extends Nette\DI\Container
 
 
 	/**
+	 * @return App\Core\RoomManager
+	 */
+	public function createService__27_App_Core_RoomManager()
+	{
+		$service = new App\Core\RoomManager($this->getService('database.default.context'));
+		return $service;
+	}
+
+
+	/**
+	 * @return App\Forms\EditRoomFormFactory
+	 */
+	public function createService__28_App_Forms_EditRoomFormFactory()
+	{
+		$service = new App\Forms\EditRoomFormFactory($this->getService('database.default.context'));
+		return $service;
+	}
+
+
+	/**
+	 * @return App\Forms\EditUserFormFactory
+	 */
+	public function createService__29_App_Forms_EditUserFormFactory()
+	{
+		$service = new App\Forms\EditUserFormFactory($this->getService('database.default.context'));
+		return $service;
+	}
+
+
+	/**
+	 * @return App\Forms\MessageFormFactory
+	 */
+	public function createService__30_App_Forms_MessageFormFactory()
+	{
+		$service = new App\Forms\MessageFormFactory($this->getService('database.default.context'));
+		return $service;
+	}
+
+
+	/**
+	 * @return App\Forms\RegisterFormFactory
+	 */
+	public function createService__31_App_Forms_RegisterFormFactory()
+	{
+		$service = new App\Forms\RegisterFormFactory($this->getService('database.default.context'));
+		return $service;
+	}
+
+
+	/**
 	 * @return App\Forms\SignFormFactory
 	 */
-	public function createService__27_App_Forms_SignFormFactory()
+	public function createService__32_App_Forms_SignFormFactory()
 	{
 		$service = new App\Forms\SignFormFactory($this->getService('security.user'));
 		return $service;
@@ -302,9 +378,19 @@ class Container_a7e1383f93 extends Nette\DI\Container
 
 
 	/**
+	 * @return App\Model\Room
+	 */
+	public function createService__33_App_Model_Room()
+	{
+		$service = new App\Model\Room($this->getService('database.default.context'));
+		return $service;
+	}
+
+
+	/**
 	 * @return App\Model\UserManager
 	 */
-	public function createService__28_App_Model_UserManager()
+	public function createService__34_App_Model_UserManager()
 	{
 		$service = new App\Model\UserManager($this->getService('database.default.context'));
 		return $service;
@@ -316,10 +402,13 @@ class Container_a7e1383f93 extends Nette\DI\Container
 	 */
 	public function createServiceApplication__1()
 	{
-		$service = new App\Presenters\DebatePresenter($this->getService('database.default.context'));
+		$service = new App\Presenters\DebatePresenter($this->getService('database.default.context'), $this->getService('33_App_Model_Room'),
+			$this->getService('27_App_Core_RoomManager'));
 		$service->injectPrimary($this, $this->getService('application.presenterFactory'), $this->getService('routing.router'),
 			$this->getService('http.request'), $this->getService('http.response'), $this->getService('session.session'),
 			$this->getService('security.user'), $this->getService('latte.templateFactory'));
+		$service->editRoomFactory = $this->getService('28_App_Forms_EditRoomFormFactory');
+		$service->messageFactory = $this->getService('30_App_Forms_MessageFormFactory');
 		$service->invalidLinkMode = 5;
 		return $service;
 	}
@@ -344,10 +433,11 @@ class Container_a7e1383f93 extends Nette\DI\Container
 	 */
 	public function createServiceApplication__3()
 	{
-		$service = new App\Presenters\HomepagePresenter($this->getService('database.default.context'));
+		$service = new App\Presenters\HomepagePresenter($this->getService('database.default.context'), $this->getService('27_App_Core_RoomManager'));
 		$service->injectPrimary($this, $this->getService('application.presenterFactory'), $this->getService('routing.router'),
 			$this->getService('http.request'), $this->getService('http.response'), $this->getService('session.session'),
 			$this->getService('security.user'), $this->getService('latte.templateFactory'));
+		$service->editUserFactory = $this->getService('29_App_Forms_EditUserFormFactory');
 		$service->invalidLinkMode = 5;
 		return $service;
 	}
@@ -362,7 +452,8 @@ class Container_a7e1383f93 extends Nette\DI\Container
 		$service->injectPrimary($this, $this->getService('application.presenterFactory'), $this->getService('routing.router'),
 			$this->getService('http.request'), $this->getService('http.response'), $this->getService('session.session'),
 			$this->getService('security.user'), $this->getService('latte.templateFactory'));
-		$service->factory = $this->getService('27_App_Forms_SignFormFactory');
+		$service->registerFactory = $this->getService('31_App_Forms_RegisterFormFactory');
+		$service->signFactory = $this->getService('32_App_Forms_SignFormFactory');
 		$service->invalidLinkMode = 5;
 		return $service;
 	}
@@ -631,7 +722,7 @@ class Container_a7e1383f93 extends Nette\DI\Container
 	 */
 	public function createServiceSecurity__user()
 	{
-		$service = new Nette\Security\User($this->getService('security.userStorage'), $this->getService('28_App_Model_UserManager'));
+		$service = new Nette\Security\User($this->getService('security.userStorage'), $this->getService('34_App_Model_UserManager'));
 		$this->getService('tracy.bar')->addPanel(new Nette\Bridges\SecurityTracy\UserPanel($service));
 		return $service;
 	}

@@ -1,7 +1,10 @@
-{block field}
+{**
+ * Displays form for sign in and two buttons, when is user not logged in.
+ *}
+{block notLoggedHeaderButtons}
 <div id="layout_body2">
     <div id="navigation2">
-        <div id="nav5">
+        <div id="nav_big">
             <a n:href="Sign:regist">Registration</a>
             <div class="clearer">&nbsp;</div>
         </div>  
@@ -19,4 +22,5 @@
     </div>
     <div class="clearer">&nbsp;</div>
 </div>
+{/block}
 {* or use {include '../components/form.latte', form => signInForm} *}
