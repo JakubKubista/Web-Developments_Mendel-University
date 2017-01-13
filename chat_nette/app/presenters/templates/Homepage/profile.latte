@@ -1,0 +1,61 @@
+{block field}
+<div id="layout_body2">
+    <div id="navigation2">
+        <div id="nav4">
+            <a n:href="Sign:out">Logout</a>
+            <div class="clearer">&nbsp;</div>
+        </div>  
+        <div class="clearer">&nbsp;</div>
+    </div>
+</div>
+
+<div id="layout_body2">
+    <div id="navigation2">
+        <div id="nav3">
+            <a n:href="Homepage:profile $thisUserID">Profile</a>
+            <div class="clearer">&nbsp;</div>
+        </div>  
+        <div class="clearer">&nbsp;</div>
+    </div>
+</div>
+{/block}
+{block content}
+<div id="navigation">
+    <div id="nav1">
+        <ul>
+            <div n:foreach="$rooms as $room" class="post">
+            <li><a n:href="Debate:room $room->id_rooms">{$room->title}</a></li>
+            </div>
+            <div class="post"><li><a n:href="Homepage:create">►</a></li></div>
+        </ul>
+        <div class="clearer">&nbsp;</div>
+    </div>
+</div>
+            
+<div id="main">
+            <div n:foreach="$users as $thisUser" >
+                <div id="sidebar">
+                    <div class="post_messages"><br />
+                Login: <b>{$thisUser->login}</b><br /><br />
+                Email: <b>{$thisUser->email}</b><br /><br />
+                Name: <b>{$thisUser->name}</b><br /><br />
+                Surname: <b>{$thisUser->surname}</b><br /><br />
+                Gender: 
+                <b>
+                {if $thisUser->gender == 'm'}
+                    man
+                {elseif $thisUser->gender == 'f'}
+                    female
+                {/if}
+                </b><br /><br />
+                Registered: <b>{$thisUser->registered}</b><br /><br />
+                Role: <b>{$thisUser->role}</b>
+                {if $thisOwner == true}
+                <center><div id="nav6"><a n:href="Homepage:edit"><center><b>Change</b></center></a></div></center>  
+                {/if}
+            </div>
+        </div>
+    </div>
+    <div class="clearer">&nbsp;</div>
+</div>
+{/block}

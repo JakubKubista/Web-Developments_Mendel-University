@@ -1,0 +1,43 @@
+{block field}
+<div id="layout_body2">
+    <div id="navigation2">
+        <div id="nav4">
+            <a n:href="Sign:out">Logout</a>
+            <div class="clearer">&nbsp;</div>
+        </div>  
+        <div class="clearer">&nbsp;</div>
+    </div>
+</div>
+
+<div id="layout_body2">
+    <div id="navigation2">
+        <div id="nav3">
+            <a n:href="Homepage:profile $thisUserID">Profile</a>
+            <div class="clearer">&nbsp;</div>
+        </div>  
+        <div class="clearer">&nbsp;</div>
+    </div>
+</div>
+{/block}
+{block content}
+<div id="navigation">
+    <div id="nav1">
+        <ul>
+            <div n:foreach="$rooms as $room" class="post">
+            <li><a n:href="Debate:room $room->id_rooms">{$room->title}</a></li>
+            </div>
+            <div class="post"><li><a n:href="Homepage:create">►</a></li></div>
+        </ul>
+        <div class="clearer">&nbsp;</div>
+    </div>
+</div>
+<div id="main">
+    <div class="left" id="content_outer">
+        <div id="content"><div class="post" >	<br /><b>    
+            Wellcome <i>{$thisUser->name}</i>,<br />
+            If you want, you can create a new room by the click on arrow or you can join to any created room. 
+            Have a nice chat. - <i>Admin</i></b>
+        </div> </div>
+    </div><div class="clearer">&nbsp;</div>
+</div> 
+{/block}
